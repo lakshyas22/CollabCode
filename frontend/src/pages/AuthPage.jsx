@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
-const GCID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const GCID     = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 const OAUTH_ERRORS = {
   google_denied:           'Google sign-in was cancelled.',
@@ -42,7 +43,6 @@ export default function AuthPage() {
   const { login, signup, loginWithGoogle } = useAuth();
   const nav = useNavigate();
 
-  // Show errors returned by backend OAuth redirects (e.g. ?error=github_denied)
   useEffect(() => {
     const oauthErr = sp.get('error');
     if (oauthErr && OAUTH_ERRORS[oauthErr]) setErr(OAUTH_ERRORS[oauthErr]);
@@ -51,33 +51,6 @@ export default function AuthPage() {
   const checks = RULES.map(r => ({ ...r, ok: r.test(pass) }));
   const score  = checks.filter(c => c.ok).length;
   const colors = ['', '#ff4d6d', '#ff8c42', '#ffd166', '#2cf59e', '#38e2ff'];
-
-  /* Google GSI button */
-  useEffect(() => {
-    if (!GCID) return;
-    const render = () => {
-      if (!window.google) return;
-      window.google.accounts.id.initialize({
-        client_id: GCID,
-        callback: async res => {
-          setBusy(true); setErr('');
-          try { await loginWithGoogle(res.credential); nav(redirect.startsWith('/') ? redirect : '/dashboard', { replace: true }); }
-          catch (e) { setErr(e.message || 'Google sign-in failed'); }
-          finally { setBusy(false); }
-        },
-      });
-      const el = document.getElementById('g-signin-btn');
-      if (el) window.google.accounts.id.renderButton(el, {
-        theme: 'filled_black', size: 'large', width: 356,
-        shape: 'rectangular', text: mode === 'signup' ? 'signup_with' : 'signin_with',
-      });
-    };
-    if (window.google) { render(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.onload = render;
-    document.head.appendChild(s);
-  }, [mode]);
 
   const submit = async e => {
     e.preventDefault(); setErr('');
@@ -101,7 +74,7 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="page-auth" style={{
+    <div style={{
       display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
       minHeight: '100dvh', padding: '40px 16px 60px',
       background: '#0a0b0f',
@@ -114,7 +87,6 @@ export default function AuthPage() {
         boxShadow: '0 24px 64px rgba(0,0,0,.6)',
         animation: 'fadein .25s ease',
       }}>
-        {/* Logo */}
         <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:24 }}>
           <div style={{ width:32,height:32,borderRadius:8,background:'linear-gradient(135deg,#38e2ff,#a259ff)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:900,color:'#000',fontFamily:"'JetBrains Mono',monospace" }}>CC</div>
           <span style={{ fontSize:16, fontWeight:800 }}>CollabCode</span>
@@ -130,22 +102,17 @@ export default function AuthPage() {
         <h1 style={{ fontSize:18,fontWeight:700,marginBottom:2 }}>{mode==='login' ? 'Sign in' : 'Create account'}</h1>
         <p style={{ fontSize:12,color:'#4e5878',marginBottom:22 }}>{mode==='login' ? 'Welcome back to CollabCode.' : 'Start collaborating in seconds.'}</p>
 
-        {/* Social login buttons */}
         <div style={{ display:'flex', flexDirection:'column', gap:8, marginBottom:18 }}>
-          {GCID ? (
-            <div id="g-signin-btn" style={{ minHeight:44, display:'flex', alignItems:'center', justifyContent:'center' }} />
-          ) : (
-            <OAuthButton
-              icon={<GoogleIcon />}
-              label={mode==='login' ? 'Continue with Google' : 'Sign up with Google'}
-              onClick={() => { window.location.href = '/api/v1/auth/oauth/google/login'; }}
-              color="#4285F4"
-            />
-          )}
+          <OAuthButton
+            icon={<GoogleIcon />}
+            label={mode==='login' ? 'Continue with Google' : 'Sign up with Google'}
+            onClick={() => { window.location.href = API_BASE + '/api/v1/auth/oauth/google/login'; }}
+            color="#4285F4"
+          />
           <OAuthButton
             icon={<GithubIcon />}
             label={mode==='login' ? 'Continue with GitHub' : 'Sign up with GitHub'}
-            onClick={() => { window.location.href = '/api/v1/auth/oauth/github'; }}
+            onClick={() => { window.location.href = API_BASE + '/api/v1/auth/oauth/github'; }}
             color="#e8ecf5"
           />
         </div>
@@ -222,7 +189,6 @@ export default function AuthPage() {
   );
 }
 
-/* ── sub-components ── */
 const LS = { display:'block',fontSize:10,fontWeight:700,color:'#4e5878',textTransform:'uppercase',letterSpacing:'.5px',marginBottom:5 };
 const IS = { width:'100%',padding:'9px 12px',background:'#161b28',border:'1px solid #1a1f30',borderRadius:6,color:'#e8ecf5',fontSize:13,outline:'none',boxSizing:'border-box',transition:'border-color .15s' };
 
