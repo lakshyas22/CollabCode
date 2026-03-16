@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@500;600;700;800&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* ── Backgrounds ─────────────────────────────────────────────────── */
+  --bg0: #0d0f1a;   /* main page background          */
+  --bg1: #13162b;   /* navbar, cards, panels         */
+  --bg2: #181c35;   /* inputs, dropdowns             */
+  --bg3: #1e2340;   /* hover states                  */
+  --bg4: #252b4a;   /* subtle borders, dividers      */
+  --b0:  #2e3561;   /* border color                  */
+  --b1:  #3a4278;   /* stronger border               */
+
+  /* ── Text ────────────────────────────────────────────────────────── */
+  --t0:  #ffffff;   /* headings, titles — pure white  */
+  --t1:  #cdd5f5;   /* body text — bright lavender    */
+  --t2:  #8b96c8;   /* secondary labels               */
+  --t3:  #4e5a8a;   /* placeholders, very dim         */
+
+  /* ── Accent colors ───────────────────────────────────────────────── */
+  --cyan:   #38e2ff;  /* primary accent, links, cursor  */
+  --violet: #a259ff;  /* secondary accent               */
+  --green:  #2cf59e;  /* success, run button            */
+  --red:    #ff4d6d;  /* errors, delete                 */
+  --yellow: #ffd166;  /* warnings                       */
+  --orange: #ff8c42;  /* strings in editor              */
+
+  /* ── Editor ──────────────────────────────────────────────────────── */
+  --ed-bg:    #0b0d1a;   /* editor background             */
+  --ed-text:  #e2e8ff;   /* editor code text              */
+  --ed-caret: #38e2ff;   /* cursor color                  */
+
+  /* ── Fonts ───────────────────────────────────────────────────────── */
+  --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --sans: 'Syne', system-ui, sans-serif;
+
+  /* ── Aliases (used by older components) ─────────────────────────── */
+  --accent-cyan:   #38e2ff;
+  --accent-violet: #a259ff;
+  --accent-green:  #2cf59e;
+  --accent-red:    #ff4d6d;
+  --accent-orange: #ff8c42;
+  --accent-yellow: #ffd166;
+  --bg-0: var(--bg0); --bg-1: var(--bg1); --bg-2: var(--bg2);
+  --bg-3: var(--bg3); --bg-4: var(--bg4);
+  --border:  var(--b0);
+  --text-0:  var(--t0); --text-1: var(--t1);
+  --text-2:  var(--t2); --text-3: var(--t3);
+  --font-mono: var(--mono);
+  --font-sans: var(--sans);
+  --transition: 0.15s ease;
+  --radius: 8px;
+  --radius-sm: 6px;
+}
+
+/* ── Base ──────────────────────────────────────────────────────────── */
+html, body { height: 100%; background: var(--bg0); color: var(--t0); }
+body { font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+#root { height: 100%; }
+
+/* ── Smooth theme transitions — only on body/html not every element ── */
+html, body, #root {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ── Page layout ───────────────────────────────────────────────────── */
+.page-auth { min-height: 100dvh; overflow-y: auto; }
+.page-app  { height: 100dvh; overflow: hidden; }
+button, input, textarea, select { font-family: inherit; }
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 10px; }
+
+/* ── Animations ────────────────────────────────────────────────────── */
+@keyframes fadein          { from{opacity:0}                              to{opacity:1} }
+@keyframes slide-in-up     { from{opacity:0;transform:translateY(-6px)}  to{opacity:1;transform:none} }
+@keyframes pulse-dot       { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes spin            { to{transform:rotate(360deg)} }
+@keyframes notification-in { from{opacity:0;transform:translateX(20px)}  to{opacity:1;transform:none} }
+
+/* ── Syntax highlight ──────────────────────────────────────────────── */
+.hl-keyword, .hl-kw  { color: #7dd3fc; font-weight: 500; }
+.hl-string,  .hl-str { color: #fca5a5; }
+.hl-comment, .hl-cmt { color: #6272a4; font-style: italic; }
+.hl-number,  .hl-num { color: #f9a8d4; }
+.hl-function,.hl-fn  { color: #86efac; }
+.hl-type,    .hl-typ { color: #fde68a; }
+.hl-decorator,.hl-dec{ color: #c4b5fd; }
+.hl-key              { color: #7dd3fc; }
+
+textarea::selection { background: rgba(56,226,255,0.28); }
+
+/* ── Workspace layout theming ──────────────────────────────────────── */
+.sidebar, .maincol, .rightpanel {
+  background: var(--bg0);
+  transition: background 0.2s ease;
+}
