@@ -1,96 +1,134 @@
-# CollabCode — Real-time Collaborative Code Editor
+# CollabCode
 
-## Quick Start (Docker — recommended)
-
-```bash
-# 1. Unzip and enter the project
-unzip collabcode-fullstack.zip
-cd collabcode-fullstack
-
-# 2. First time only — clean build
-docker compose down --rmi all --volumes 2>/dev/null; true
-docker compose build --no-cache
-
-# 3. Start everything
-docker compose up
-
-# 4. Open in browser
-# Frontend:  http://localhost:5173
-# API docs:  http://localhost:8000/docs
-```
-
-**Subsequent runs:** just `docker compose up`
+A real-time collaborative code editor built for the browser. CollabCode allows multiple users to edit, run, and manage code simultaneously with live synchronization.
 
 ---
 
-## Requirements
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+## Live Demo
+
+Try the application here:  
+https://collabcode-beta.vercel.app
+
+- Open the link in multiple tabs or browsers to test real-time collaboration  
+- Best experienced on a desktop browser  
+
+---
+
+## Overview
+
+CollabCode is designed to support low-latency collaborative editing using persistent connections and efficient state synchronization. It combines a modern frontend editor with a scalable backend to handle concurrent users and real-time updates.
 
 ---
 
 ## Features
-- **Real-time collaboration** — multiple users edit simultaneously
-- **CodeMirror 6 editor** — VS Code-quality with real cursor, selection, syntax highlighting
-- **VS Code shortcuts** — Ctrl+S save, Ctrl+Enter run, Ctrl+/ comment, Alt+↑↓ move line, Ctrl+D multi-select, Ctrl+F find
-- **Live preview** — instant HTML/CSS/JS preview panel
-- **Integrated terminal** — run Python, JavaScript, Go, Ruby, Bash and more
-- **Error highlighting** — errors from terminal output highlight the relevant lines
-- **Version snapshots** — save and restore file versions
-- **Google Sign-In** — optional, see below
+
+- Real-time multi-user collaboration with live cursor and selection sync  
+- Code editor powered by CodeMirror with syntax highlighting and formatting  
+- Live code execution with output streaming  
+- Integrated terminal supporting multiple runtimes  
+- Version snapshots for saving and restoring code states  
+- Secure authentication using JWT with optional Google OAuth  
 
 ---
 
-## Google Sign-In (optional)
+## Architecture
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Credentials
-2. Create an **OAuth 2.0 Client ID** (Web application)
-3. Add `http://localhost:5173` to **Authorized JavaScript origins**
-4. Copy the Client ID (format: `123...apps.googleusercontent.com`)
-5. Edit `.env` and set: `VITE_GOOGLE_CLIENT_ID=your_client_id_here`
-6. Rebuild: `docker compose build frontend && docker compose up`
+The system is structured as a full-stack application with real-time communication:
+
+- Frontend
+  - React-based interface  
+  - CodeMirror editor for code interaction  
+  - WebSocket client for real-time updates  
+
+- Backend
+  - FastAPI-based services handling REST APIs and WebSocket connections  
+  - Manages sessions, authentication, and execution workflows  
+
+- Real-time Layer
+  - WebSockets for bidirectional communication  
+  - Redis Pub/Sub for broadcasting updates across sessions  
+
+- Storage
+  - PostgreSQL for persistent data  
+  - Redis for caching and transient state  
+
+- Deployment
+  - Docker and Docker Compose for containerized environments  
+
+---
+
+## Tech Stack
+
+- Frontend: React.js, Tailwind CSS, CodeMirror  
+- Backend: FastAPI, WebSockets  
+- Database: PostgreSQL  
+- Cache / Messaging: Redis  
+- Infrastructure: Docker  
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Docker Desktop installed and running  
+
+### Setup
+
+```bash
+unzip collabcode-fullstack.zip
+cd collabcode-fullstack
+
+docker compose down --rmi all --volumes 2>/dev/null; true
+docker compose build --no-cache
+
+docker compose up
+```
+
+### Access
+
+- Frontend: http://localhost:5173  
+- API Documentation: http://localhost:8000/docs  
+
+For subsequent runs:
+
+```bash
+docker compose up
+```
+
+---
+
+## Development Notes
+
+- WebSocket connections are used to maintain real-time state across clients  
+- Redis Pub/Sub enables message propagation across instances  
+- Backend services are designed to handle concurrent users using async processing  
+- Docker ensures consistent local and deployment environments  
 
 ---
 
 ## Keyboard Shortcuts
 
 | Shortcut | Action |
-|---|---|
-| `Ctrl+S` / `Cmd+S` | Save file |
-| `Ctrl+Enter` / `Cmd+Enter` | Run code |
-| `Ctrl+Shift+F` | Format code |
-| `Ctrl+/` | Toggle comment |
-| `Alt+↑` / `Alt+↓` | Move line up/down |
-| `Ctrl+D` | Select next occurrence |
-| `Ctrl+Shift+K` | Delete line |
-| `Ctrl+Shift+D` | Duplicate line |
-| `Ctrl+F` | Find in file |
-| `Ctrl+Z` / `Ctrl+Y` | Undo / Redo |
-| `Tab` / `Shift+Tab` | Indent / Dedent |
+|--------|--------|
+| Ctrl+S / Cmd+S | Save file |
+| Ctrl+Enter | Run code |
+| Ctrl+/ | Toggle comment |
+| Ctrl+D | Select next occurrence |
+| Ctrl+F | Find |
+| Alt+↑ / Alt+↓ | Move line |
 
 ---
 
-## Troubleshooting
+## Future Work
 
-**Port already in use:**
-```bash
-docker compose down
-docker compose up
-```
+- Improved conflict resolution (OT/CRDT-based synchronization)  
+- Horizontal scaling with load balancing  
+- Persistent collaborative workspaces  
+- Access control and team-based features  
 
-**Fresh start (clears all data):**
-```bash
-docker compose down --volumes
-docker compose build --no-cache
-docker compose up
-```
+---
 
-**Frontend shows blank page:**
-- Wait 10–15 seconds for all services to fully start
-- Refresh the page
-- Check `docker compose logs frontend` for errors
+## License
 
-**Can't connect / API errors:**
-```bash
-docker compose logs backend
-docker compose logs frontend
-```
+This project is for educational and development purposes.
